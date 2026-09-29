@@ -15,7 +15,7 @@ export const liveWeightArrobas = (weightGainKg: number) => safe(weightGainKg) / 
 
 export function calculateLot(raw: LotInput): LotMetrics {
   const animals = safe(raw.animals), days = safe(raw.days);
-  const exits = (raw.exits ?? []).filter(x => safe(x.quantity) > 0);
+  const exits = (raw.exits ?? []).filter(x => safe(x.quantity) > 0 && x.confirmed !== false);
   const movementDeaths = exits.filter(x => x.type === 'morte').reduce((s,x)=>s+safe(x.quantity),0);
   const movementOther = exits.filter(x => x.type === 'outra').reduce((s,x)=>s+safe(x.quantity),0);
   const deaths = exits.length ? movementDeaths : safe(raw.deaths ?? 0), otherExits = exits.length ? movementOther : safe(raw.otherExits ?? 0);
