@@ -20,8 +20,16 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const movementOther = exits.filter(x => x.type === 'outra').reduce((s,x)=>s+safe(x.quantity),0);
   const deaths = exits.length ? movementDeaths : safe(raw.deaths ?? 0), otherExits = exits.length ? movementOther : safe(raw.otherExits ?? 0);
   const saleAnimals = Math.max(0, animals - deaths - otherExits);
+  const start = raw.startDate ? new Date(raw.startDate+'T12:00:00') : null;
+  const exitDay = (x: typeof exits[number]) => {
+    if (x.date && start && !Number.isNaN(start.getTime())) {
+      const dt = new Date(x.date+'T12:00:00');
+      if (!Number.isNaN(dt.getTime())) return Math.max(1, Math.min(days, Math.floor((dt.getTime()-start.getTime())/86400000)+1));
+    }
+    return Math.max(1, Math.min(days, safe(x.day) || days));
+  };
   const animalDays = exits.length
-    ? Math.max(0, animals * days - exits.reduce((s,x)=>s + safe(x.quantity) * Math.max(0, days - Math.min(days, safe(x.day))),0))
+    ? Math.max(0, animals * days - exits.reduce((s,x)=>s + safe(x.quantity) * Math.max(0, days - exitDay(x)),0))
     : animals * days;
   const entry = safe(raw.entryWeight), current = safe(raw.currentWeight);
   const gain = Math.max(0, current - entry);
