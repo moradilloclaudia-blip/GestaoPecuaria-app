@@ -2,7 +2,7 @@ export type PricingUnit = 'kg' | 'arroba';
 export type CostBasis = 'animal' | 'dia' | 'lote' | 'receita_pct';
 export type CostItem = { id: string; name: string; value: number; basis: CostBasis };
 export type LotInput = {
-  name: string; animals: number; entryWeight: number; currentWeight: number; days: number;
+  name: string; animals: number; deaths?: number; otherExits?: number; entryWeight: number; currentWeight: number; days: number;
   carcassYield: number; purchaseWeight: number; purchasePrice: number; purchaseUnit: PricingUnit;
   intake: number; dietCost: number; salePrice: number; saleUnit: PricingUnit; otherCosts: CostItem[];
 };
