@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Beef, CalendarDays, ChartNoAxesCombined, CircleDollarSign, Gauge, LayoutDashboard, Menu, Scale, Settings2, TrendingUp, WalletCards, X } from 'lucide-react';
 import { calculateLot } from './domain/calculations';
@@ -8,9 +8,13 @@ import { MetricCard } from './components/MetricCard';
 import { CostList } from './components/CostList';
 
 const initial:LotInput={name:'Lote Confinamento 01',animals:120,entryWeight:365,currentWeight:510,days:105,carcassYield:55,purchaseWeight:365,purchasePrice:11.8,purchaseUnit:'kg',intake:10.5,dietCost:1.42,salePrice:315,saleUnit:'arroba',otherCosts:[{id:'1',name:'Sanidade',value:32,basis:'animal'},{id:'2',name:'Mão de obra',value:4800,basis:'lote'},{id:'3',name:'Frete de compra',value:2100,basis:'lote'},{id:'4',name:'Frete de venda',value:0,basis:'lote'},{id:'5',name:'Comissão de compra',value:0,basis:'animal'},{id:'6',name:'Comissão de venda',value:0,basis:'receita_pct'}]};
+type StoredLot={id:string;status:'ativo'|'finalizado';data:LotInput};
+const STORAGE_KEY='gestao-pecuaria-lotes-v1';
+const loadLots=():StoredLot[]=>{try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return[{id:'lote-1',status:'ativo',data:initial}];const parsed=JSON.parse(raw);return Array.isArray(parsed)&&parsed.length?parsed:[{id:'lote-1',status:'ativo',data:initial}]}catch{return[{id:'lote-1',status:'ativo',data:initial}]}};
 const brl=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}); const num=(v:number,d=1)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
 export function App(){
- const [lots,setLots]=useState<Array<{id:string;status:'ativo'|'finalizado';data:LotInput}>>([{id:'lote-1',status:'ativo',data:initial}]); const [activeId,setActiveId]=useState('lote-1'); const [tab,setTab]=useState<'dashboard'|'dados'|'lotes'>('dashboard'); const [menu,setMenu]=useState(false);
+ const [lots,setLots]=useState<StoredLot[]>(loadLots); const [activeId,setActiveId]=useState('lote-1'); const [tab,setTab]=useState<'dashboard'|'dados'|'lotes'>('dashboard'); const [menu,setMenu]=useState(false);
+ useEffect(()=>{try{localStorage.setItem(STORAGE_KEY,JSON.stringify(lots))}catch{}},[lots]);
  const active=lots.find(l=>l.id===activeId)??lots[0]; const lot=active.data; const setLot=(updater:React.SetStateAction<LotInput>)=>setLots(prev=>prev.map(item=>item.id!==activeId?item:{...item,data:typeof updater==='function'?(updater as (p:LotInput)=>LotInput)(item.data):updater}));
  const newLot=()=>{const id='lote-'+Date.now(); const data={...initial,name:`Lote Confinamento ${String(lots.length+1).padStart(2,'0')}`,otherCosts:initial.otherCosts.map(x=>({...x}))};setLots(p=>[...p,{id,status:'ativo',data}]);setActiveId(id);setTab('dados')};
  const toggleStatus=(id:string)=>setLots(p=>p.map(x=>x.id===id?{...x,status:x.status==='ativo'?'finalizado':'ativo'}:x));
