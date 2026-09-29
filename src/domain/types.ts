@@ -13,4 +13,5 @@ export type LotMetrics = {
   carcassWeightPerAnimal: number; carcassArrobasPerAnimal: number; carcassArrobasTotal: number;
   costPerHeadDay: number; purchasePerAnimal: number; purchaseTotal: number; investment: number;
   saleArrobasPerAnimal: number; revenue: number; result: number; marginPerAnimal: number; roi: number; breakEven: number;
+  maxPurchaseTotal: number; maxPurchasePerAnimal: number; maxPurchasePriceKg: number;
 };
