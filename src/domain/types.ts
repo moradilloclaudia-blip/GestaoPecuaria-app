@@ -10,6 +10,7 @@ export type LotMetrics = {
   dailyGain: number; weightGain: number; feedPerHeadDay: number; feedPerAnimal: number; feedTotal: number;
   otherCostsTotal: number; productionCosts: number; operationalPerAnimal: number; totalCost: number;
   liveArrobasProducedPerAnimal: number; liveArrobasProducedTotal: number; producedArrobaCost: number;
+  carcassWeightPerAnimal: number; carcassArrobasPerAnimal: number; carcassArrobasTotal: number;
   costPerHeadDay: number; purchasePerAnimal: number; purchaseTotal: number; investment: number;
   saleArrobasPerAnimal: number; revenue: number; result: number; marginPerAnimal: number; roi: number; breakEven: number;
 };
