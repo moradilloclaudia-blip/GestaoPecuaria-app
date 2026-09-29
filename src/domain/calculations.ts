@@ -8,9 +8,9 @@ export function expandCost(item: CostItem, animals: number, days: number): numbe
   return value;
 }
 
-/** Regra MVP: arrobas produzidas medem ganho de peso VIVO (15 kg/@).
- * Este cálculo fica isolado para futura troca por arroba de carcaça. */
-export const liveWeightArrobas = (weightGainKg: number) => safe(weightGainKg) / 15;
+/** Arroba equivalente produzida em peso vivo: 30 kg de ganho de PV = 1 @ equivalente.
+ * Mantida separada da arroba de carcaça (15 kg), que depende do rendimento informado. */
+export const liveWeightArrobas = (weightGainKg: number) => safe(weightGainKg) / 30;
 
 export function calculateLot(raw: LotInput): LotMetrics {
   const animals = safe(raw.animals), days = safe(raw.days);
@@ -30,8 +30,11 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const producedPerAnimal = liveWeightArrobas(gain);
   const producedTotal = producedPerAnimal * animals;
   const investment = purchaseTotal + productionCosts;
-  const saleArrobasPerAnimal = (current * safe(raw.carcassYield) / 100) / 15;
-  const revenue = saleArrobasPerAnimal * animals * safe(raw.salePrice);
+  const carcassWeightPerAnimal = current * safe(raw.carcassYield) / 100;
+  const carcassArrobasPerAnimal = carcassWeightPerAnimal / 15;
+  const carcassArrobasTotal = carcassArrobasPerAnimal * animals;
+  const saleArrobasPerAnimal = carcassArrobasPerAnimal;
+  const revenue = carcassArrobasTotal * safe(raw.salePrice);
   const result = revenue - investment;
   return {
     dailyGain, weightGain: gain, feedPerHeadDay, feedPerAnimal, feedTotal, otherCostsTotal,
@@ -39,6 +42,7 @@ export function calculateLot(raw: LotInput): LotMetrics {
     totalCost: investment, liveArrobasProducedPerAnimal: producedPerAnimal,
     liveArrobasProducedTotal: producedTotal, producedArrobaCost: producedTotal ? productionCosts / producedTotal : 0,
     costPerHeadDay: animals && days ? productionCosts / animals / days : 0,
+    carcassWeightPerAnimal, carcassArrobasPerAnimal, carcassArrobasTotal,
     purchasePerAnimal, purchaseTotal, investment, saleArrobasPerAnimal, revenue, result,
     marginPerAnimal: animals ? result / animals : 0, roi: investment ? result / investment * 100 : 0,
     breakEven: saleArrobasPerAnimal && animals ? investment / (saleArrobasPerAnimal * animals) : 0,
