@@ -1,6 +1,6 @@
 export type PricingUnit = 'kg' | 'arroba';
 export type CostBasis = 'animal' | 'dia' | 'lote' | 'receita_pct';
-export type LotExit = { id: string; type: 'morte' | 'outra'; quantity: number; day: number; date?: string; photoName?: string; confirmed?: boolean };
+export type LotExit = { id: string; type: 'morte' | 'outra'; quantity: number; day?: number; date?: string; photoName?: string; confirmed?: boolean };
 export type CostItem = { id: string; name: string; value: number; basis: CostBasis };
 export type LotInput = {
   name: string; animals: number; deaths?: number; otherExits?: number; exits?: LotExit[]; entryWeight: number; currentWeight: number; days: number;
