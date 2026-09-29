@@ -1,10 +1,11 @@
 import type { CostItem, LotInput, LotMetrics } from './types';
 
 const safe = (value: number) => Number.isFinite(value) && value > 0 ? value : 0;
-export function expandCost(item: CostItem, animals: number, days: number): number {
+export function expandCost(item: CostItem, animals: number, days: number, revenue = 0): number {
   const value = safe(item.value);
   if (item.basis === 'animal') return value * animals;
   if (item.basis === 'dia') return value * days;
+  if (item.basis === 'receita_pct') return safe(revenue) * value / 100;
   return value;
 }
 
@@ -20,7 +21,8 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const feedPerHeadDay = safe(raw.intake) * safe(raw.dietCost);
   const feedPerAnimal = feedPerHeadDay * days;
   const feedTotal = feedPerAnimal * animals;
-  const otherCostsTotal = raw.otherCosts.reduce((sum, cost) => sum + expandCost(cost, animals, days), 0);
+  const otherCostsTotal = raw.otherCosts.reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
+  const salesCommissionTotal = raw.otherCosts.filter(cost => cost.basis === 'receita_pct').reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
   // Compra é capital de aquisição e, deliberadamente, não compõe o custo da @ produzida.
   const productionCosts = feedTotal + otherCostsTotal;
   const purchasePerAnimal = raw.purchaseUnit === 'arroba'
@@ -40,7 +42,7 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const maxPurchasePerAnimal = animals ? maxPurchaseTotal / animals : 0;
   const maxPurchasePriceKg = safe(raw.purchaseWeight) ? maxPurchasePerAnimal / safe(raw.purchaseWeight) : 0;
   return {
-    dailyGain, weightGain: gain, feedPerHeadDay, feedPerAnimal, feedTotal, otherCostsTotal,
+    dailyGain, weightGain: gain, feedPerHeadDay, feedPerAnimal, feedTotal, otherCostsTotal, salesCommissionTotal,
     productionCosts, operationalPerAnimal: animals ? productionCosts / animals : 0,
     totalCost: investment, liveArrobasProducedPerAnimal: producedPerAnimal,
     liveArrobasProducedTotal: producedTotal, producedArrobaCost: producedTotal ? productionCosts / producedTotal : 0,
