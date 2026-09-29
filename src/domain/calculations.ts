@@ -28,7 +28,7 @@ export function calculateLot(raw: LotInput): LotMetrics {
   // Compra é capital de aquisição e, deliberadamente, não compõe o custo da @ produzida.
   const productionCosts = feedTotal + otherCostsTotal;
   const purchasePerAnimal = raw.purchaseUnit === 'arroba'
-    ? (safe(raw.purchaseWeight) / 15) * safe(raw.purchasePrice)
+    ? (safe(raw.purchaseWeight) / 30) * safe(raw.purchasePrice)
     : safe(raw.purchaseWeight) * safe(raw.purchasePrice);
   const purchaseTotal = purchasePerAnimal * animals;
   const producedPerAnimal = liveWeightArrobas(gain);
