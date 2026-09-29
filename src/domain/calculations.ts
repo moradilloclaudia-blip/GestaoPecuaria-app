@@ -21,6 +21,9 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const feedPerHeadDay = safe(raw.intake) * safe(raw.dietCost);
   const feedPerAnimal = feedPerHeadDay * days;
   const feedTotal = feedPerAnimal * animals;
+  const carcassWeightPerAnimal = current * safe(raw.carcassYield) / 100;
+  const carcassArrobasPerAnimal = carcassWeightPerAnimal / 15;
+  const carcassArrobasTotal = carcassArrobasPerAnimal * animals;
   const saleQuantityPerAnimal = raw.saleUnit === 'kg' ? carcassWeightPerAnimal : carcassArrobasPerAnimal;
   const revenue = saleQuantityPerAnimal * animals * safe(raw.salePrice);
   const otherCostsTotal = raw.otherCosts.reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
@@ -34,9 +37,6 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const producedPerAnimal = liveWeightArrobas(gain);
   const producedTotal = producedPerAnimal * animals;
   const investment = purchaseTotal + productionCosts;
-  const carcassWeightPerAnimal = current * safe(raw.carcassYield) / 100;
-  const carcassArrobasPerAnimal = carcassWeightPerAnimal / 15;
-  const carcassArrobasTotal = carcassArrobasPerAnimal * animals;
   const saleArrobasPerAnimal = carcassArrobasPerAnimal;
   const result = revenue - investment;
   const maxPurchaseTotal = Math.max(0, revenue - productionCosts);
