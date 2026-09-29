@@ -43,3 +43,20 @@ Nesta versão, a arroba produzida corresponde ao **ganho de peso vivo dividido p
 ## Evolução planejada
 
 A camada de domínio não depende do React e permite incorporar persistência, múltiplas propriedades e ciclos, novas modalidades produtivas, DRE, autenticação e relatórios sem reescrever as regras principais.
+
+## Prévia sem dependências
+
+Quando o acesso ao registry npm estiver indisponível, há uma prévia navegável que não depende de pacotes externos. Ela preserva as mesmas premissas de cálculo do MVP:
+
+```bash
+npm run preview:static
+```
+
+Acesse `http://localhost:4173/preview/`. Essa alternativa permite navegar pelo dashboard, editar as principais premissas e observar o recálculo dos indicadores diretamente no navegador.
+
+## Publicação no GitHub Pages
+
+O workflow `.github/workflows/pages.yml` publica automaticamente a prévia quando
+esta branch chega à `main`. O endereço público aparece no resumo da execução
+**Publicar prévia no GitHub Pages**, na aba **Actions** do repositório. A URL termina
+em `/preview/` e não requer Node.js ou instalação no computador de quem acessa.
