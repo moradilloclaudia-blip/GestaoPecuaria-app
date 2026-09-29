@@ -4,7 +4,7 @@ export type CostItem = { id: string; name: string; value: number; basis: CostBas
 export type LotInput = {
   name: string; animals: number; entryWeight: number; currentWeight: number; days: number;
   carcassYield: number; purchaseWeight: number; purchasePrice: number; purchaseUnit: PricingUnit;
-  intake: number; dietCost: number; salePrice: number; otherCosts: CostItem[];
+  intake: number; dietCost: number; salePrice: number; saleUnit: PricingUnit; otherCosts: CostItem[];
 };
 export type LotMetrics = {
   dailyGain: number; weightGain: number; feedPerHeadDay: number; feedPerAnimal: number; feedTotal: number;
@@ -13,5 +13,5 @@ export type LotMetrics = {
   carcassWeightPerAnimal: number; carcassArrobasPerAnimal: number; carcassArrobasTotal: number;
   costPerHeadDay: number; purchasePerAnimal: number; purchaseTotal: number; investment: number;
   saleArrobasPerAnimal: number; revenue: number; result: number; marginPerAnimal: number; roi: number; breakEven: number;
-  maxPurchaseTotal: number; maxPurchasePerAnimal: number; maxPurchasePriceKg: number;
+  maxPurchaseTotal: number; maxPurchasePerAnimal: number; maxPurchasePriceKg: number; maxPurchasePriceArroba: number;
 };
