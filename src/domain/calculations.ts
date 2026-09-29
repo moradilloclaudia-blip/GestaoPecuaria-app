@@ -14,7 +14,7 @@ export function expandCost(item: CostItem, animals: number, days: number, revenu
 export const liveWeightArrobas = (weightGainKg: number) => safe(weightGainKg) / 30;
 
 export function calculateLot(raw: LotInput): LotMetrics {
-  const animals = safe(raw.animals), days = safe(raw.days);
+  const animals = safe(raw.animals), deaths = safe(raw.deaths ?? 0), otherExits = safe(raw.otherExits ?? 0), saleAnimals = Math.max(0, animals - deaths - otherExits), days = safe(raw.days);
   const entry = safe(raw.entryWeight), current = safe(raw.currentWeight);
   const gain = Math.max(0, current - entry);
   const dailyGain = days ? gain / days : 0;
@@ -25,7 +25,7 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const carcassArrobasPerAnimal = carcassWeightPerAnimal / 15;
   const carcassArrobasTotal = carcassArrobasPerAnimal * animals;
   const saleQuantityPerAnimal = raw.saleUnit === 'kg' ? carcassWeightPerAnimal : carcassArrobasPerAnimal;
-  const revenue = saleQuantityPerAnimal * animals * safe(raw.salePrice);
+  const revenue = saleQuantityPerAnimal * saleAnimals * safe(raw.salePrice);
   const otherCostsTotal = raw.otherCosts.reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
   const salesCommissionTotal = raw.otherCosts.filter(cost => cost.basis === 'receita_pct').reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
   // Compra é capital de aquisição e, deliberadamente, não compõe o custo da @ produzida.
@@ -52,7 +52,7 @@ export function calculateLot(raw: LotInput): LotMetrics {
     carcassWeightPerAnimal, carcassArrobasPerAnimal, carcassArrobasTotal,
     purchasePerAnimal, purchaseTotal, investment, saleArrobasPerAnimal, revenue, result,
     marginPerAnimal: animals ? result / animals : 0, roi: investment ? result / investment * 100 : 0,
-    breakEven: saleArrobasPerAnimal && animals ? investment / (saleArrobasPerAnimal * animals) : 0,
+    breakEven: saleArrobasPerAnimal && saleAnimals ? investment / (saleArrobasPerAnimal * saleAnimals) : 0,
     maxPurchaseTotal, maxPurchasePerAnimal, maxPurchasePriceKg, maxPurchasePriceArroba,
   };
 }
