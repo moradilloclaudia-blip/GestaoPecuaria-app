@@ -21,6 +21,8 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const feedPerHeadDay = safe(raw.intake) * safe(raw.dietCost);
   const feedPerAnimal = feedPerHeadDay * days;
   const feedTotal = feedPerAnimal * animals;
+  const saleQuantityPerAnimal = raw.saleUnit === 'kg' ? carcassWeightPerAnimal : carcassArrobasPerAnimal;
+  const revenue = saleQuantityPerAnimal * animals * safe(raw.salePrice);
   const otherCostsTotal = raw.otherCosts.reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
   const salesCommissionTotal = raw.otherCosts.filter(cost => cost.basis === 'receita_pct').reduce((sum, cost) => sum + expandCost(cost, animals, days, revenue), 0);
   // Compra é capital de aquisição e, deliberadamente, não compõe o custo da @ produzida.
@@ -36,11 +38,11 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const carcassArrobasPerAnimal = carcassWeightPerAnimal / 15;
   const carcassArrobasTotal = carcassArrobasPerAnimal * animals;
   const saleArrobasPerAnimal = carcassArrobasPerAnimal;
-  const revenue = carcassArrobasTotal * safe(raw.salePrice);
   const result = revenue - investment;
   const maxPurchaseTotal = Math.max(0, revenue - productionCosts);
   const maxPurchasePerAnimal = animals ? maxPurchaseTotal / animals : 0;
   const maxPurchasePriceKg = safe(raw.purchaseWeight) ? maxPurchasePerAnimal / safe(raw.purchaseWeight) : 0;
+  const maxPurchasePriceArroba = safe(raw.purchaseWeight) ? maxPurchasePerAnimal / (safe(raw.purchaseWeight) / 30) : 0;
   return {
     dailyGain, weightGain: gain, feedPerHeadDay, feedPerAnimal, feedTotal, otherCostsTotal, salesCommissionTotal,
     productionCosts, operationalPerAnimal: animals ? productionCosts / animals : 0,
@@ -51,6 +53,6 @@ export function calculateLot(raw: LotInput): LotMetrics {
     purchasePerAnimal, purchaseTotal, investment, saleArrobasPerAnimal, revenue, result,
     marginPerAnimal: animals ? result / animals : 0, roi: investment ? result / investment * 100 : 0,
     breakEven: saleArrobasPerAnimal && animals ? investment / (saleArrobasPerAnimal * animals) : 0,
-    maxPurchaseTotal, maxPurchasePerAnimal, maxPurchasePriceKg,
+    maxPurchaseTotal, maxPurchasePerAnimal, maxPurchasePriceKg, maxPurchasePriceArroba,
   };
 }
