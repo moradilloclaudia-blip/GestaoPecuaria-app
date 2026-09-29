@@ -20,7 +20,10 @@ export function calculateLot(raw: LotInput): LotMetrics {
   const movementOther = exits.filter(x => x.type === 'outra').reduce((s,x)=>s+safe(x.quantity),0);
   const deaths = exits.length ? movementDeaths : safe(raw.deaths ?? 0), otherExits = exits.length ? movementOther : safe(raw.otherExits ?? 0);
   const saleAnimals = Math.max(0, animals - deaths - otherExits);
-  const start = raw.startDate ? new Date(raw.startDate+'T12:00:00') : null;
+  const reference = raw.referenceDate ? new Date(raw.referenceDate+'T12:00:00') : new Date();
+  reference.setHours(12,0,0,0);
+  const start = new Date(reference);
+  start.setDate(start.getDate() - Math.max(0, days - 1));
   const exitDay = (x: typeof exits[number]) => {
     if (x.date && start && !Number.isNaN(start.getTime())) {
       const dt = new Date(x.date+'T12:00:00');
