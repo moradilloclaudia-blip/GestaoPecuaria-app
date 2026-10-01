@@ -60,3 +60,15 @@
 .stock-min-input{width:112px;max-width:100%;box-sizing:border-box;padding:8px;border:1px solid #dce5df;border-radius:7px;margin-right:6px}.stock-page [data-stock-min-save]{padding:8px 10px;cursor:pointer}
 
 .stock-replenishment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin:18px 0}.stock-replenishment-card{border:1px solid #dce5df;border-radius:12px;padding:18px;background:#fff;min-width:0}.stock-replenishment-card h4{font-size:17px;margin:0 0 14px;color:#243c30}.stock-replenishment-main{padding:12px;border-radius:8px;background:#f1f6f2;margin-bottom:12px}.stock-replenishment-main small{display:block;color:#53685b;margin-bottom:5px}.stock-replenishment-main strong{font-size:23px;color:#245b3c}.stock-replenishment-card dl{margin:0}.stock-replenishment-card dl div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #edf0ed}.stock-replenishment-card dt{color:#64736b}.stock-replenishment-card dd{margin:0;font-weight:700;text-align:right}
+
+/* Farmácia: campos contidos no painel e navegação consistente. */
+.pharmacy-page,.pharmacy-page .cycle-report{min-width:0;max-width:100%;box-sizing:border-box}
+.pharmacy-page [data-ph-group][hidden]{display:none!important}
+.pharmacy-page .report-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end;width:100%;max-width:100%;min-width:0}
+.pharmacy-page .report-filters label{display:flex;flex-direction:column;gap:6px;min-width:0;width:100%;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+.pharmacy-page .report-filters input,.pharmacy-page .report-filters select{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+.pharmacy-page .expense-table-scroll{max-width:100%;overflow-x:auto}
+.pharmacy-page .cycle-report{overflow-wrap:anywhere}
+aside nav button[data-page="farmacia"] .preview-icon{margin:0;flex:0 0 19px;width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;padding:0;border-radius:0;background:transparent;color:inherit}
+@media(max-width:1100px){.pharmacy-page .report-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.pharmacy-page .report-filters{grid-template-columns:minmax(0,1fr)}}
