@@ -58,3 +58,5 @@
 .stock-page [data-stock-group][hidden]{display:none!important}
 
 .stock-min-input{width:112px;max-width:100%;box-sizing:border-box;padding:8px;border:1px solid #dce5df;border-radius:7px;margin-right:6px}.stock-page [data-stock-min-save]{padding:8px 10px;cursor:pointer}
+
+.batch-ingredient-list{margin:18px 0;max-width:100%}.batch-ingredient-list h4{margin:0 0 8px}.batch-ingredient-qty{width:135px;max-width:100%;box-sizing:border-box;padding:9px;border:1px solid #dce5df;border-radius:7px}.batch-ingredient-list #batch-add-item{margin-top:14px;padding:10px 15px;cursor:pointer}
