@@ -53,3 +53,6 @@
 .expense-subnav button.active{background:#245b3c;color:white}
 .expense-page [data-expense-group][hidden]{display:none!important}
 @media(max-width:600px){.expense-subnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.expense-subnav button{padding:10px 6px;font-size:12px}}
+
+/* Reutiliza a navegação interna de Despesas no Estoque. */
+.stock-page [data-stock-group][hidden]{display:none!important}
