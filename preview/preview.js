@@ -66,7 +66,7 @@ function editStockBatch(id,remove=false){
  if(remove){if(!confirm('Excluir esta batida? Os ingredientes voltarão ao saldo e os custos vinculados ao lote serão recalculados.'))return}
  else{
   const date=askEdit('Data da batida (AAAA-MM-DD)',original.date);if(date===null)return;
-  const lotId=askEdit('ID do lote de destino (consulte a lista exibida na próxima mensagem)',original.lotId);if(lotId===null)return;
+  const lotId=askEdit('ID do lote de destino: '+lots.map(l=>l.id+' = '+l.data.name).join('; ')+'',original.lotId);if(lotId===null)return;
   const target=lots.find(l=>l.id===lotId);if(!target)return alert('Lote não encontrado. IDs disponíveis: '+lots.map(l=>l.id+' = '+l.data.name).join('; '));
   if(!validIsoDate(date))return alert('Data inválida.');
   const ingredients=[];for(const ing of original.ingredients||[]){
@@ -153,6 +153,19 @@ function bindExpenses(){
  if(!date||!description||!Number.isFinite(value)||value<=0)return alert('Informe data, descrição e valor maior que zero.');
  expenses.push({id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),date,lotId,lotName:target?target.data.name:'Propriedade',category,description,value});
  saveExpenses();render()};
+ document.querySelectorAll('[data-expense-edit]').forEach(btn=>btn.onclick=()=>{
+ const entry=expenses.find(x=>String(x.id)===btn.dataset.expenseEdit);if(!entry)return;
+ const date=askEdit('Data (AAAA-MM-DD)',entry.date);if(date===null)return;
+ const lotId=askEdit('Destino: geral ou ID do lote ('+lots.map(l=>l.id+' = '+l.data.name).join('; ')+')',entry.lotId);if(lotId===null)return;
+ const target=lots.find(l=>l.id===lotId);if(lotId!=='geral'&&!target)return alert('Destino inválido.');
+ const category=askEdit('Categoria',entry.category);if(category===null)return;
+ const description=askEdit('Descrição',entry.description);if(description===null)return;
+ const valueRaw=askEdit('Valor total (R$)',entry.value);if(valueRaw===null)return;
+ const value=Number(valueRaw.replace(',','.'));
+ if(!validIsoDate(date)||!category.trim()||!description.trim()||!valueRaw.trim()||!Number.isFinite(value)||value<=0)return alert('Confira data, categoria, descrição e valor.');
+ Object.assign(entry,{date,lotId,lotName:target?target.data.name:'Propriedade',category:category.trim(),description:description.trim(),value});
+ saveExpenses();render();
+ });
  document.querySelectorAll('[data-expense-delete]').forEach(e=>e.onclick=()=>{if(!confirm('Excluir esta despesa?'))return;expenses=expenses.filter(x=>x.id!==e.dataset.expenseDelete);saveExpenses();render()});
 }
 function shell(c){return `<div class="app-shell"><aside class="open"><div class="brand"><span>${icon('♜')}</span><div><b>GESTÃO</b><strong>PECUÁRIA</strong></div></div><nav><small>VISÃO GERAL</small><button data-page="dashboard" class="${page==='dashboard'?'active':''}">${icon('▦')} Dashboard</button><button data-page="dados" class="${page==='dados'?'active':''}">${icon('⚙')} Análise do lote</button><small>GESTÃO</small><button data-page="lotes" class="${page==='lotes'?'active':''}">${icon('♜')} Lotes</button><button data-page="estoque" class="${page==='estoque'?'active':''}">${icon('▤')} Estoque de ração</button><button data-page="despesas" class="${page==='despesas'?'active':''}">${icon('▣')} Despesas</button><button data-page="relatorios" class="${page==='relatorios'?'active':''}">${icon('▥')} Relatórios</button></nav><div class="sidebar-foot"><div class="avatar">GP</div><div><b>Minha propriedade</b><span>Plano demonstração</span></div></div></aside><main><header><div><p>Confinamento <span>•</span> Ciclo atual</p><h1>${page==='dashboard'?'Visão geral do lote':page==='dados'?'Análise econômica':page==='lotes'?'Lotes e ciclos':page==='estoque'?'Estoque de ração':page==='despesas'?'Despesas realizadas':'Relatórios'}</h1></div><div class="status"><i></i> Prévia local navegável</div></header>${c}</main></div><div class="preview-note"><b>PRÉVIA SEM DEPENDÊNCIAS</b> · Dados mantidos nesta sessão</div>`}
