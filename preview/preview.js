@@ -278,11 +278,12 @@ function bindExpenses(){
  if(filter)filter.onchange=()=>{expenseFilter=filter.value;render()};
  const add=document.querySelector('#expense-add');
  if(add)add.onclick=()=>{const date=document.querySelector('#expense-date').value,lotId=document.querySelector('#expense-lot').value,category=document.querySelector('#expense-category').value,description=document.querySelector('#expense-description').value.trim(),value=Number(document.querySelector('#expense-value').value),target=operationalLots.find(x=>x.id===lotId);
+ if(category===ANIMAL_PURCHASE_CATEGORY)return alert('Compras de animais devem ser lançadas exclusivamente na aba Compra, para atualizar o estoque.');
  if(!date||!description||!Number.isFinite(value)||value<=0)return alert('Informe data, descrição e valor maior que zero.');
  expenses.push({id:String(Date.now())+'-'+Math.random().toString(36).slice(2,7),date,lotId,lotName:target?target.data.name:'Propriedade',category,description,value});
  saveExpenses();render()};
  document.querySelectorAll('[data-expense-edit]').forEach(btn=>btn.onclick=()=>{
- const entry=expenses.find(x=>String(x.id)===btn.dataset.expenseEdit);if(!entry)return;
+ const entry=expenses.find(x=>String(x.id)===btn.dataset.expenseEdit);if(!entry)return;if(entry.category===ANIMAL_PURCHASE_CATEGORY)return alert('Esta compra movimenta o estoque. Exclua-a na aba Compra, se não houver vendas que dependam dela.');
  const date=askEdit('Data (AAAA-MM-DD)',entry.date);if(date===null)return;
  const lotId=askEdit('Destino: geral ou ID do lote ('+operationalLots.map(l=>l.id+' = '+l.data.name).join('; ')+')',entry.lotId);if(lotId===null)return;
  const target=operationalLots.find(l=>l.id===lotId);if(lotId!=='geral'&&!target)return alert('Destino inválido.');
@@ -290,11 +291,12 @@ function bindExpenses(){
  const description=askEdit('Descrição',entry.description);if(description===null)return;
  const valueRaw=askEdit('Valor total (R$)',entry.value);if(valueRaw===null)return;
  const value=Number(valueRaw.replace(',','.'));
+ if(category.trim()===ANIMAL_PURCHASE_CATEGORY)return alert('Compras de animais devem ser lançadas na aba Compra.');
  if(!validIsoDate(date)||!category.trim()||!description.trim()||!valueRaw.trim()||!Number.isFinite(value)||value<=0)return alert('Confira data, categoria, descrição e valor.');
  Object.assign(entry,{date,lotId,lotName:target?target.data.name:'Propriedade',category:category.trim(),description:description.trim(),value});
  saveExpenses();render();
  });
- document.querySelectorAll('[data-expense-delete]').forEach(e=>e.onclick=()=>{if(!confirm('Excluir esta despesa?'))return;expenses=expenses.filter(x=>x.id!==e.dataset.expenseDelete);saveExpenses();render()});
+ document.querySelectorAll('[data-expense-delete]').forEach(e=>e.onclick=()=>{const entry=expenses.find(x=>String(x.id)===e.dataset.expenseDelete);if(entry?.category===ANIMAL_PURCHASE_CATEGORY)return alert('Exclua compras de animais pela aba Compra para manter o estoque correto.');if(!confirm('Excluir esta despesa?'))return;expenses=expenses.filter(x=>x.id!==e.dataset.expenseDelete);saveExpenses();render()});
 }
 function menuIcon(name){
  const paths={
