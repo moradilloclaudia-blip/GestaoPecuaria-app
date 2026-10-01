@@ -39,7 +39,54 @@ function stockPage(){
  (batchDraft.length?'<div style="overflow-x:auto"><table class="report-table"><thead><tr><th>Ingrediente</th><th>Quantidade</th><th>Custo estimado</th><th></th></tr></thead><tbody>'+batchDraft.map((x,i)=>'<tr><td>'+escapeText(x.name)+'</td><td>'+num(x.kg,1)+' kg</td><td>'+brl(x.kg*(items.find(y=>y.name===x.name)?.avg||0))+'</td><td><button data-batch-remove="'+i+'">Remover</button></td></tr>').join('')+'</tbody></table></div><p><b>Total da batida: '+num(batchDraft.reduce((n,x)=>n+x.kg,0),1)+' kg · '+brl(batchDraft.reduce((n,x)=>n+x.kg*(items.find(y=>y.name===x.name)?.avg||0),0))+'</b></p><p><b>Custo estimado do kg da ração pronta: '+brl(batchDraft.reduce((n,x)=>n+x.kg*(items.find(y=>y.name===x.name)?.avg||0),0)/batchDraft.reduce((n,x)=>n+x.kg,0))+'/kg</b></p><p>Calculado pelo custo médio atual dos ingredientes. O valor definitivo será registrado ao confirmar a batida.</p><button id="batch-confirm">Confirmar batida e baixar estoque</button>':'<p>Adicione os ingredientes da batida.</p>')+'</section>'+
  '<section data-stock-group="resumo" class="cycle-report"><h3>Resumo diário da ração</h3><p>Quantidade produzida e destinada aos lotes; não equivale necessariamente à quantidade efetivamente fornecida.</p><label>Data <input type="date" id="stock-daily-date" value="'+stockDailyDate+'"></label>'+(()=>{const day=stock.batches.filter(b=>b.date===stockDailyDate),kg=day.reduce((n,b)=>n+Number(b.kg||0),0),cost=day.reduce((n,b)=>n+Number(b.cost||0),0);return '<div class="report-summary"><span><small>Quantidade na data</small><b>'+num(kg,1)+' kg</b></span><span><small>Custo total</small><b>'+brl(cost)+'</b></span><span><small>Custo médio/kg</small><b>'+(kg?brl(cost/kg)+'/kg':'—')+'</b></span></div>'+(day.length?'<div class="stock-daily-table-wrap"><table class="report-table stock-daily-table"><thead><tr><th>Lote</th><th>Ingrediente</th><th>Quantidade</th><th>Custo do ingrediente</th></tr></thead><tbody>'+day.flatMap(b=>(b.ingredients||[]).map(i=>'<tr><td>'+escapeText(b.lotName)+'</td><td>'+escapeText(i.name)+'</td><td>'+num(i.kg,1)+' kg</td><td>'+(()=>{const c=historicalIngredientCost(b,i);return c.value===null?'Sem base para estimativa':brl(c.value)+(c.estimated?' (estimado)':'')})()+'</td></tr>')).join('')+'</tbody></table></div><p>Nas batidas antigas, o custo individual é estimado proporcionalmente ao custo médio atual dos ingredientes, mantendo o custo total original da batida. A estimativa não representa necessariamente o preço histórico.</p>':'<p>Não há batidas nesta data.</p>')})()+'</section>'+'<section data-stock-group="historico" class="cycle-report"><h3>Histórico de batidas</h3>'+(stock.batches.length?'<div style="overflow-x:auto"><table class="report-table"><thead><tr><th>Data</th><th>Lote</th><th>Quantidade</th><th>Custo</th><th>Custo/kg</th><th>Ingredientes</th><th>Ações</th></tr></thead><tbody>'+stock.batches.slice().reverse().map(b=>'<tr><td>'+b.date.split('-').reverse().join('/')+'</td><td>'+escapeText(b.lotName)+'</td><td>'+num(b.kg,1)+' kg</td><td>'+brl(b.cost)+'</td><td>'+brl(b.kg?b.cost/b.kg:0)+'</td><td>'+b.ingredients.map(i=>escapeText(i.name)+': '+num(i.kg,1)+' kg').join('<br>')+'</td><td><button type="button" data-batch-edit="'+escapeText(b.id)+'">Editar</button> <button type="button" data-batch-delete="'+escapeText(b.id)+'">Excluir</button></td></tr>').join('')+'</tbody></table></div>':'<p>Nenhuma batida registrada.</p>')+'</section></div>';
 }
+function askEdit(label,current){return prompt(label,String(current??''))}
+function validIsoDate(s){return /^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(new Date(s+'T12:00:00').getTime())}
+function stockBalancesValid(){return stockItems().every(x=>x.balance>=-0.000001)}
+function editStockEntry(index,remove=false){
+ const original=stock.entries[index];if(!original)return;
+ let updated;
+ if(remove){if(!confirm('Excluir esta entrada? O saldo e o custo médio serão recalculados.'))return}
+ else{
+  const name=askEdit('Ingrediente',original.name);if(name===null)return;
+  const date=askEdit('Data (AAAA-MM-DD)',original.date);if(date===null)return;
+  const kgRaw=askEdit('Quantidade recebida (kg)',original.kg);if(kgRaw===null)return;
+  const priceRaw=askEdit('Custo por kg (R$)',original.price);if(priceRaw===null)return;
+  const kg=Number(kgRaw.replace(',','.')),price=Number(priceRaw.replace(',','.'));
+  if(!name.trim()||!validIsoDate(date)||!kgRaw.trim()||!Number.isFinite(kg)||kg<=0||!priceRaw.trim()||!Number.isFinite(price)||price<0)return alert('Confira ingrediente, data, quantidade e custo.');
+  if(name.trim()!==original.name&&stock.batches.some(b=>(b.ingredients||[]).some(i=>i.name===original.name)))return alert('Este ingrediente já foi utilizado em batidas. Mantenha o nome para preservar o histórico.');
+  updated={...original,name:name.trim(),date,kg,price};
+ }
+ stock.entries.splice(index,1,...(remove?[]:[updated]));
+ if(!stockBalancesValid()){stock.entries.splice(index,remove?0:1,original);return alert('Operação cancelada: o saldo de algum ingrediente ficaria negativo. Revise as batidas vinculadas.')}
+ saveStock();render();
+}
+function editStockBatch(id,remove=false){
+ const index=stock.batches.findIndex(b=>String(b.id)===String(id));if(index<0)return;
+ const original=stock.batches[index];let updated;
+ if(remove){if(!confirm('Excluir esta batida? Os ingredientes voltarão ao saldo e os custos vinculados ao lote serão recalculados.'))return}
+ else{
+  const date=askEdit('Data da batida (AAAA-MM-DD)',original.date);if(date===null)return;
+  const lotId=askEdit('ID do lote de destino (consulte a lista exibida na próxima mensagem)',original.lotId);if(lotId===null)return;
+  const target=lots.find(l=>l.id===lotId);if(!target)return alert('Lote não encontrado. IDs disponíveis: '+lots.map(l=>l.id+' = '+l.data.name).join('; '));
+  if(!validIsoDate(date))return alert('Data inválida.');
+  const ingredients=[];for(const ing of original.ingredients||[]){
+   const raw=askEdit('Quantidade (kg) de '+ing.name+' (0 para retirar da batida)',ing.kg);if(raw===null)return;
+   const kg=Number(raw.replace(',','.'));if(!raw.trim()||!Number.isFinite(kg)||kg<0)return alert('Quantidade inválida.');
+   if(kg>0){const historical=historicalIngredientCost(original,ing);const unit=Number.isFinite(historical.value)&&Number(ing.kg)>0?historical.value/Number(ing.kg):(stockItems().find(x=>x.name===ing.name)?.avg||0);ingredients.push({...ing,kg,cost:kg*unit})}
+  }
+  if(!ingredients.length)return alert('Uma batida precisa conter pelo menos um ingrediente.');
+  const kg=ingredients.reduce((n,i)=>n+i.kg,0),cost=ingredients.reduce((n,i)=>n+i.cost,0);
+  updated={...original,date,lotId:target.id,lotName:target.data.name,ingredients,kg,cost};
+ }
+ stock.batches.splice(index,1,...(remove?[]:[updated]));
+ if(!stockBalancesValid()){stock.batches.splice(index,remove?0:1,original);return alert('Alteração cancelada: o saldo de algum ingrediente ficaria negativo.')}
+ saveStock();render();
+}
 function bindStock(){
+ document.querySelectorAll('[data-entry-edit]').forEach(b=>b.onclick=()=>editStockEntry(Number(b.dataset.entryEdit)));
+ document.querySelectorAll('[data-entry-delete]').forEach(b=>b.onclick=()=>editStockEntry(Number(b.dataset.entryDelete),true));
+ document.querySelectorAll('[data-batch-edit]').forEach(b=>b.onclick=()=>editStockBatch(b.dataset.batchEdit));
+ document.querySelectorAll('[data-batch-delete]').forEach(b=>b.onclick=()=>editStockBatch(b.dataset.batchDelete,true));
  document.querySelectorAll('[data-stock-min-save]').forEach(btn=>btn.onclick=()=>{const name=btn.dataset.stockMinSave,input=[...document.querySelectorAll('[data-stock-min]')].find(x=>x.dataset.stockMin===name);if(!input)return;const raw=input.value.trim();if(raw===''){delete stockMinimums[name]}else{const amount=Number(raw);if(!Number.isFinite(amount)||amount<0)return alert('Informe um estoque mínimo válido, maior ou igual a zero.');stockMinimums[name]=amount}try{localStorage.setItem(STOCK_MIN_KEY,JSON.stringify(stockMinimums))}catch{return alert('Não foi possível salvar o limite neste navegador.')}render()});
  document.querySelectorAll('[data-stock-group]').forEach(el=>{el.hidden=el.dataset.stockGroup!==stockTab});
  document.querySelectorAll('[data-stock-tab]').forEach(el=>el.onclick=()=>{stockTab=el.dataset.stockTab;render()});
