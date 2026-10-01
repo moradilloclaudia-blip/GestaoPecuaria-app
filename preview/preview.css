@@ -58,3 +58,5 @@
 .stock-page [data-stock-group][hidden]{display:none!important}
 
 .stock-min-input{width:112px;max-width:100%;box-sizing:border-box;padding:8px;border:1px solid #dce5df;border-radius:7px;margin-right:6px}.stock-page [data-stock-min-save]{padding:8px 10px;cursor:pointer}
+
+.stock-replenishment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;margin:18px 0}.stock-replenishment-card{border:1px solid #dce5df;border-radius:12px;padding:18px;background:#fff;min-width:0}.stock-replenishment-card h4{font-size:17px;margin:0 0 14px;color:#243c30}.stock-replenishment-main{padding:12px;border-radius:8px;background:#f1f6f2;margin-bottom:12px}.stock-replenishment-main small{display:block;color:#53685b;margin-bottom:5px}.stock-replenishment-main strong{font-size:23px;color:#245b3c}.stock-replenishment-card dl{margin:0}.stock-replenishment-card dl div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #edf0ed}.stock-replenishment-card dt{color:#64736b}.stock-replenishment-card dd{margin:0;font-weight:700;text-align:right}
