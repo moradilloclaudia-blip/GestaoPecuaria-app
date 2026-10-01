@@ -18,3 +18,16 @@
 .stock-daily-table th:nth-child(2),.stock-daily-table td:nth-child(2){width:29%;text-align:left}
 .stock-daily-table th:nth-child(3),.stock-daily-table td:nth-child(3){width:17%;text-align:right}
 .stock-daily-table th:nth-child(4),.stock-daily-table td:nth-child(4){width:27%;text-align:right;padding-right:22px}
+
+/* Despesas: campos responsivos e tabelas contidas nas margens. */
+.expense-entry{min-width:0;max-width:100%;box-sizing:border-box}
+.expense-entry .report-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end;max-width:100%;min-width:0}
+.expense-entry .report-filters label{display:flex;flex-direction:column;min-width:0;width:100%;max-width:100%;box-sizing:border-box}
+.expense-entry .report-filters input,.expense-entry .report-filters select{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.expense-entry .report-filters button{min-width:0;max-width:100%;white-space:normal}
+.expense-table-scroll{width:100%;max-width:100%;box-sizing:border-box;overflow-x:auto;margin-top:14px;border:1px solid #e7eae6;border-radius:8px}
+.expense-detail-table{width:100%;min-width:560px;table-layout:auto;border-collapse:collapse}
+.expense-detail-table th,.expense-detail-table td{padding:12px 16px;overflow-wrap:anywhere}
+.expense-detail-table th:last-child,.expense-detail-table td:last-child{text-align:right;padding-right:22px}
+@media(max-width:1050px){.expense-entry .report-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.expense-entry .report-filters{grid-template-columns:minmax(0,1fr)}}
