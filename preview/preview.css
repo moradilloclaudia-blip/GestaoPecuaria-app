@@ -78,3 +78,5 @@ aside nav button[data-page]{display:flex;align-items:center;justify-content:flex
 aside nav button[data-page] .nav-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;width:28px;height:28px;margin:0;padding:0;border-radius:8px;background:#ffffff12;color:inherit}
 aside nav button[data-page].active .nav-icon{background:#173f3614}
 aside nav button[data-page] .nav-icon svg{display:block;width:19px;height:19px;flex:none}
+
+[data-analysis-group][hidden]{display:none!important}
