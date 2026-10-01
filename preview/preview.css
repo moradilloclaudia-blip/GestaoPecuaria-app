@@ -56,3 +56,5 @@
 
 /* Reutiliza a navegação interna de Despesas no Estoque. */
 .stock-page [data-stock-group][hidden]{display:none!important}
+
+.stock-min-input{width:112px;max-width:100%;box-sizing:border-box;padding:8px;border:1px solid #dce5df;border-radius:7px;margin-right:6px}.stock-page [data-stock-min-save]{padding:8px 10px;cursor:pointer}
