@@ -239,9 +239,9 @@ function menuIcon(name){
  const paths={
  dashboard:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
  dados:'<path d="M4 19V5M4 19h16"/><path d="m7 15 4-4 3 2 5-7"/><circle cx="19" cy="6" r="1"/>',
- lotes:'<path d="M4 20V8l8-5 8 5v12"/><path d="M4 11h16M9 20v-6h6v6"/><path d="M7 8h.01M12 8h.01M17 8h.01"/>',
+ lotes:'<path d="M6 8C3.8 8 2.5 6.5 2 4c2.2 1 4.3 1.1 6 2.4M18 8c2.2 0 3.5-1.5 4-4-2.2 1-4.3 1.1-6 2.4"/><path d="M7 7.2C8.4 5.8 10 5.5 12 5.5s3.6.3 5 1.7c1.8 1.9 2.1 4.4 1.4 7.1-.3 1.4-1.1 2.7-2.3 3.5L14 20h-4l-2.1-2.2c-1.2-.8-2-2.1-2.3-3.5-.7-2.7-.4-5.2 1.4-7.1Z"/><path d="M8.3 11.4h.1m7.2 0h.1M10 15.1c1.3-.8 2.7-.8 4 0M10.5 17h.1m2.8 0h.1"/>',
  estoque:'<path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/>',
- farmacia:'<rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 7v10M7 12h10"/>',
+ farmacia:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6Z" fill="currentColor" stroke="none"/>',
  despesas:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M16 15h2"/>',
  relatorios:'<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v5h4M9 17v-4M12 17v-7M15 17v-3"/>'
  };
