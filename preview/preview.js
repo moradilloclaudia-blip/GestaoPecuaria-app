@@ -82,7 +82,24 @@ function editStockBatch(id,remove=false){
  if(!stockBalancesValid()){stock.batches.splice(index,remove?0:1,original);return alert('Alteração cancelada: o saldo de algum ingrediente ficaria negativo.')}
  saveStock();render();
 }
+function editIngredientExit(id,name,remove=false){
+ const index=stock.batches.findIndex(b=>String(b.id)===String(id));if(index<0)return;
+ const original=stock.batches[index],ingredient=(original.ingredients||[]).find(i=>i.name===name);if(!ingredient)return;
+ if(remove&&!confirm('Excluir a saída de '+name+' desta batida? O estoque e o custo da batida serão recalculados.'))return;
+ let kg=0;
+ if(!remove){const raw=askEdit('Nova quantidade (kg) de '+name+' nesta batida',ingredient.kg);if(raw===null)return;kg=Number(raw.replace(',','.'));if(!raw.trim()||!Number.isFinite(kg)||kg<0)return alert('Informe uma quantidade válida. Para retirar o ingrediente, use Excluir saída.');if(kg===0)return alert('Use Excluir saída para retirar este ingrediente.')}
+ const historical=historicalIngredientCost(original,ingredient),unit=Number.isFinite(historical.value)&&Number(ingredient.kg)>0?historical.value/Number(ingredient.kg):(stockItems().find(x=>x.name===name)?.avg||0);
+ const ingredients=(original.ingredients||[]).filter(i=>i!==ingredient);
+ if(!remove)ingredients.push({...ingredient,kg,cost:kg*unit});
+ if(!ingredients.length){if(!confirm('Este é o único ingrediente da batida. Excluir também a batida inteira?'))return}
+ const updated=ingredients.length?{...original,ingredients,kg:ingredients.reduce((n,i)=>n+safe(i.kg),0),cost:ingredients.reduce((n,i)=>n+(historicalIngredientCost(original,i).value??safe(i.kg)*(stockItems().find(x=>x.name===i.name)?.avg||0)),0)}:null;
+ stock.batches.splice(index,1,...(updated?[updated]:[]));
+ if(!stockBalancesValid()){stock.batches.splice(index,updated?1:0,original);return alert('Alteração cancelada: saldo insuficiente para a quantidade informada.')}
+ saveStock();render();
+}
 function bindStock(){
+ document.querySelectorAll('[data-exit-edit]').forEach(btn=>btn.onclick=()=>editIngredientExit(btn.dataset.exitEdit,btn.dataset.exitIngredient));
+ document.querySelectorAll('[data-exit-delete]').forEach(btn=>btn.onclick=()=>editIngredientExit(btn.dataset.exitDelete,btn.dataset.exitIngredient,true));
  document.querySelectorAll('[data-entry-edit]').forEach(b=>b.onclick=()=>editStockEntry(Number(b.dataset.entryEdit)));
  document.querySelectorAll('[data-entry-delete]').forEach(b=>b.onclick=()=>editStockEntry(Number(b.dataset.entryDelete),true));
  document.querySelectorAll('[data-batch-edit]').forEach(b=>b.onclick=()=>editStockBatch(b.dataset.batchEdit));
