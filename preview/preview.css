@@ -46,3 +46,10 @@
 .expense-month-controls{display:flex;flex-wrap:wrap;gap:14px;margin:16px 0;max-width:100%}
 .expense-month-controls label{display:flex;flex-direction:column;gap:6px;max-width:100%;min-width:0;font-size:11px;font-weight:700;color:#52625b}
 .expense-month-controls input{height:42px;padding:0 12px;border:1px solid #dfe4df;border-radius:8px;box-sizing:border-box;max-width:100%}
+
+/* Navegação interna da aba Despesas. */
+.expense-subnav{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0;padding:8px;border:1px solid #dce5df;border-radius:12px;background:#f6f9f6}
+.expense-subnav button{cursor:pointer;padding:10px 14px;border:1px solid transparent;border-radius:8px;background:transparent;color:#35483c;font-weight:700;font-size:13px}
+.expense-subnav button.active{background:#245b3c;color:white}
+.expense-page [data-expense-group][hidden]{display:none!important}
+@media(max-width:600px){.expense-subnav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.expense-subnav button{padding:10px 6px;font-size:12px}}
