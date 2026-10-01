@@ -9,3 +9,12 @@
 .actual-actions{display:flex;align-items:center;gap:12px;margin-top:16px}.actual-actions .primary-btn{padding:11px 16px}.actual-confirm-note{color:#68766f;font-size:9px}@media(max-width:700px){.actual-actions{align-items:stretch;flex-direction:column}}
 
 .actual-grid input,.actual-grid select{text-align:center;font-variant-numeric:tabular-nums;min-width:0}.actual-grid select{padding-left:6px;padding-right:6px;text-align-last:center}.actual-grid label{min-width:0}.actual-grid label span,.actual-grid label small{text-align:center}.actual-grid select option{text-align:left}@media(max-width:700px){.actual-grid{grid-template-columns:1fr 1fr}.actual-grid input,.actual-grid select{font-size:12px;padding:10px 5px}}
+
+/* Resumo diário da ração: manter tabela dentro das margens do cartão. */
+.stock-daily-table-wrap{width:100%;max-width:100%;overflow-x:auto;box-sizing:border-box;margin:16px 0 14px;border:1px solid #e7eae6;border-radius:8px}
+.stock-daily-table{width:100%;min-width:650px;table-layout:fixed;border-collapse:collapse}
+.stock-daily-table th,.stock-daily-table td{box-sizing:border-box;padding:12px 16px;vertical-align:middle;overflow-wrap:anywhere}
+.stock-daily-table th:nth-child(1),.stock-daily-table td:nth-child(1){width:27%;text-align:left}
+.stock-daily-table th:nth-child(2),.stock-daily-table td:nth-child(2){width:29%;text-align:left}
+.stock-daily-table th:nth-child(3),.stock-daily-table td:nth-child(3){width:17%;text-align:right}
+.stock-daily-table th:nth-child(4),.stock-daily-table td:nth-child(4){width:27%;text-align:right;padding-right:22px}
