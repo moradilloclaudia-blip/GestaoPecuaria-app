@@ -31,3 +31,13 @@
 .expense-detail-table th:last-child,.expense-detail-table td:last-child{text-align:right;padding-right:22px}
 @media(max-width:1050px){.expense-entry .report-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.expense-entry .report-filters{grid-template-columns:minmax(0,1fr)}}
+
+/* Formulário de despesas: grade independente das regras gerais de filtros. */
+.expense-entry{width:100%;min-width:0;max-width:100%;overflow:hidden;box-sizing:border-box}
+.expense-entry .expense-form-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end;width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:20px 0 0}
+.expense-entry .expense-form-grid label{display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.expense-entry .expense-form-grid label span{font-size:10px;font-weight:700;color:#5f6d67}
+.expense-entry .expense-form-grid input,.expense-entry .expense-form-grid select{width:100%;max-width:100%;min-width:0;box-sizing:border-box;height:42px;border:1px solid #dfe4df;border-radius:8px;padding:0 10px;background:#fff}
+.expense-entry .expense-form-grid button{width:100%;min-width:0;max-width:100%;box-sizing:border-box;min-height:42px;padding:8px 12px;white-space:normal;border:1px solid #dfe4df;border-radius:8px;background:#fff;color:#28594b;font-weight:700}
+@media(max-width:1050px){.expense-entry .expense-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.expense-entry .expense-form-grid{grid-template-columns:minmax(0,1fr)}}
