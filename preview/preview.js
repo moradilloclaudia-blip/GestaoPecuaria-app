@@ -255,7 +255,7 @@ function bindBackup(){
  if(download)download.onclick=()=>{
   persist();
   const data={format:'gestao-pecuaria-backup',version:1,exportedAt:new Date().toISOString(),records:{}};
-  for(const key of BACKUP_KEYS){const raw=localStorage.getItem(key);data.records[key]=raw===null?null:JSON.parse(raw)}
+  for(const key of BACKUP_KEYS){const raw=localStorage.getItem(key);data.records[key]=raw===null?(key===STORAGE_KEY?lots:key===STOCK_KEY?stock:key===STOCK_MIN_KEY?stockMinimums:key===PH_KEY?pharmacy:expenses):JSON.parse(raw)}
   const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   const a=document.createElement('a');a.href=url;a.download='gestao-pecuaria-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
  };
@@ -266,7 +266,7 @@ function bindBackup(){
   let data;
   try{data=JSON.parse(await file.text())}catch{feedback.textContent='Arquivo inválido: não foi possível ler o JSON.';return}
   if(!data||data.format!=='gestao-pecuaria-backup'||data.version!==1||!data.records||typeof data.records!=='object'||Array.isArray(data.records)){feedback.textContent='Arquivo incompatível com o backup do Gestão Pecuária.';return}
-  if(!BACKUP_KEYS.every(k=>Object.prototype.hasOwnProperty.call(data.records,k))||!Array.isArray(data.records[STORAGE_KEY])||!data.records[STORAGE_KEY].every(l=>l&&typeof l==='object'&&l.id&&l.data&&typeof l.data==='object'&&Array.isArray(l.data.otherCosts))||!data.records[STOCK_KEY]||!Array.isArray(data.records[STOCK_KEY].entries)||!Array.isArray(data.records[STOCK_KEY].batches)||!data.records[PH_KEY]||!Array.isArray(data.records[PH_KEY].moves)||!data.records[EXPENSE_KEY]||!Array.isArray(data.records[EXPENSE_KEY].entries)){feedback.textContent='O backup não contém a estrutura esperada. Nenhum dado foi alterado.';return}
+  if(!BACKUP_KEYS.every(k=>Object.prototype.hasOwnProperty.call(data.records,k))||!Array.isArray(data.records[STORAGE_KEY])||!data.records[STORAGE_KEY].every(l=>l&&typeof l==='object'&&l.id&&l.data&&typeof l.data==='object'&&Array.isArray(l.data.otherCosts))||!data.records[STOCK_KEY]||!Array.isArray(data.records[STOCK_KEY].entries)||!Array.isArray(data.records[STOCK_KEY].batches)||!data.records[PH_KEY]||!Array.isArray(data.records[PH_KEY].moves)||!Array.isArray(data.records[EXPENSE_KEY])){feedback.textContent='O backup não contém a estrutura esperada. Nenhum dado foi alterado.';return}
   if(data.records[STOCK_MIN_KEY]!==null&&(typeof data.records[STOCK_MIN_KEY]!=='object'||Array.isArray(data.records[STOCK_MIN_KEY]))){feedback.textContent='Limites de estoque inválidos. Nenhum dado foi alterado.';return}
   if(!confirm('ATENÇÃO: restaurar este arquivo substituirá TODOS os lotes, estoques, registros da farmácia e despesas salvos neste navegador. Deseja continuar?'))return;
   const before={};try{
